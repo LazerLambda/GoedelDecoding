@@ -11,28 +11,20 @@ module Goedel(getfromgoedelnumber, testmodule) where
     error_message_decodingalph = "ERROR: This number contains invalid characters!\n\t'-> Valid Characters includes \"[a-b]\""
 
     getfromgoedelnumber :: Integer -> Either String String
-    getfromgoedelnumber number = 
-        if 
-            number <= 0 
-        then 
-            Left error_message_input
-        else 
-            Right (to_string $ count_occurences ((sort_list . (getlist number)) []) empty)
+    getfromgoedelnumber number
+        | number <= 0 =Left error_message_input
+        | otherwise = Right (to_string $ count_occurences ((sort_list . (getlist number)) []) empty)
 
     getlist :: Integer -> [Integer] -> [Integer]
-    getlist number acc = case number == 1 of
-        True -> acc
-        False -> let (next_number, p) = compute_new number (nextPrime 1 :: Prime Integer) in
+    getlist number acc
+        | number == 1 = acc
+        | otherwise = let (next_number, p) = compute_new number (nextPrime 1 :: Prime Integer) in
             getlist next_number (p:acc)
         where
             compute_new :: Integer -> Prime Integer-> (Integer, Integer)
-            compute_new input p = 
-                if 
-                    input `mod` (unPrime p) == 0 
-                then 
-                    (input `div` (unPrime p), (unPrime p :: Integer))
-                else
-                    compute_new input (succ (p :: Prime Integer))
+            compute_new input p
+                | input `mod` (unPrime p) == 0  = (input `div` (unPrime p), (unPrime p :: Integer))
+                | otherwise                     = compute_new input (succ (p :: Prime Integer))
 
     sort_list :: [Integer] -> [Integer]
     sort_list lst = sort lst
